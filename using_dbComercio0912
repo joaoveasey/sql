@@ -1,0 +1,222 @@
+use db_Comercio_0912
+
+--1)Selecione todos os dados dos produtos que comecem com as iniciais 'ma'.
+select * 
+from Produto
+where Descricao like 'ma%'
+
+insert into Produto(Descricao,QtdeEstoqueAtual,QtdeEstoqueMinimo,VrUnitario)
+values('Material escolar',154,30,75);
+
+--2)Selecione o nome dos clientes cujo nome terminemcom a letra 'w'.
+select * 
+from Cliente
+where Nome like '%w'
+
+--3)Selecione o id, nome, sexo, e-mail dos clientes que possuem e-mail do 'hotmail'.
+select Id, Nome, Sexo, Email
+from Cliente
+where Email like '%hotmail%'
+
+--4)Acrescente 50 unidades ao estoque mínimode cadaproduto.
+update Produto
+set [QtdeEstoqueMinimo] = 50
+where QtdeEstoqueMinimo <> 50
+
+--5)Selecione todos os dados dos clientes do sexo feminino.
+select * 
+from Cliente
+where sexo = 'F'
+
+--6)Selecione todos os dados dos produtos que estejam com o estoque atual abaixo do 
+--estoque mínimo.
+select * 
+from Produto
+where QtdeEstoqueAtual < QtdeEstoqueMinimo
+
+--7)Selecione o nome dos produtos que possuem vrunitario acima de R$ 10.00 em ordem 
+--crescente de qtdeestoqueatual.
+select Descricao 
+from Produto
+where VrUnitario > 10
+order by QtdeEstoqueAtual asc
+
+--8)Selecione todos os dados dos clientes que nasceram no mês de julho.
+select * 
+from Cliente
+where month(DtNascimento)=7
+
+--9)Acrescente 4,3% ao vrunitario de todos os produtos.
+update Produto
+set [VrUnitario]=VrUnitario * 1.043
+where QtdeEstoqueMinimo = 50
+
+--10)Selecione nome dos clientessem email cadastrado.
+select * 
+from Cliente
+where Email is null 
+
+--11)Informeo valor total de produtos em estoque(useafunçãode soma)
+select sum(QtdeEstoqueAtual)
+from Produto
+
+--12)Selecione todos os dados dos clientes que nasceram nos meses 08,09 e 10.
+select *
+from Cliente
+where month(DtNascimento) between 08 and 10
+
+--13)Selecione o valor médio dos produtos em estoque(valor médio dos produtos 
+--em estoque = média (qtdeestoqueatual * vrunitario))
+select avg(vrunitario)
+from Produto
+
+--14)Selecionar todos os dados das vendas (inclusive seus produtos) realizadas 
+--para o cliente 'aroldo rodrigues'.(use subquery)
+select * 
+from Cliente as c
+inner join VendaProduto as vp
+on c.Id=vp.Id
+inner join Venda as v
+on v.Id=vp.Id
+where Nome like '%aroldo%'
+
+--15)Selecione o nome dos clientes junto com sua idade aproximada.
+select 
+Nome as Nome, sum(2023-year(dtnascimento)) as Idade
+from Cliente
+group by Nome
+
+--16)Selecione os 3menoresvrunitario dentre os produtos.
+select top 3 VrUnitario
+from Produto
+
+--17)Informe o valor total das vendas não finalizadas
+select count(*) 
+from Venda
+where IdStatus = 1
+
+--18)Selecione o id e dt da venda que estão finalizadas e foram realizadas 
+--pelos clientes que possuem a letra 'm' no nome.
+select v.Id, v.Dt
+from Venda as v
+inner join Cliente as c
+on c.Id=v.Id
+where c.Nome like '%m%'
+
+--19)Selecionar todos os dados das vendas (somente vendas -não incluir os produtos). 
+--Não exclua as vendas sem clientes. Exibaa string Anônimono nome deles.
+select 
+IIF(IdCliente is null,'Anônimo',' ')
+from Venda
+--??
+
+--20)Selecione o nome dos clientes que compraram o produto apontador.(subconsulta)
+select c.nome
+from Cliente as c
+inner join Venda as v
+on v.Id=c.Id
+inner join VendaProduto as vp
+on vp.Id=v.Id
+inner join Produto as p
+on p.Id=vp.Id
+where p.Descricao = 
+(select Descricao 
+from Produto 
+where Descricao like '%apont%')
+
+--21) Selecionar todos os dados das vendas (inclusive seus produtos) que 
+--foram realizadas apartir da data '20/12/2015'.(além do id do cliente e do 
+--id do status da venda, tanto o nome quanto a descrição dos mesmos devem ser 
+--exibidos.Não exclua vendas que não tenham cliente)
+select 
+v.Id, 
+v.IdCliente, 
+v.IdStatus, 
+v.Dt, 
+vp.IdProduto,
+p.Descricao
+from Venda as v
+inner join VendaProduto as vp
+on v.Id=vp.Id
+inner join Produto as p
+on p.Id=vp.Id
+where v.Dt > '2015-12-20'
+
+--22)Selecione o nome dos clientes que não compraram o produto mouse.
+select 
+c.Nome, 
+p.Descricao
+from Cliente as c
+inner join Venda as v
+on v.Id=c.Id
+inner join VendaProduto as vp
+on vp.Id=v.Id
+inner join Produto as p
+on p.Id=vp.Id
+where p.Descricao not like '%mouse%'
+
+--23)Faça a instrução para inserir o seguinte cliente:Nome = 
+--Jose Silva Furtado,Sexo = m,Dtnascimento = 01/10/1967,Email = jose@furtadoseg.com.br.
+insert into Cliente (Nome,Sexo,DtNascimento,Email)
+values ('Jose Silva Furtado','m','1967-10-01','jose@furtadoseg.com.br')
+
+--24)Exibir o relatório de vendas finalizadas com os seguintes campos:id venda, 
+--descrição do status da venda, idcliente e nome do cliente. (Se a venda não possuir 
+--cliente, ela deve ser exibida no relatório com os campos de cliente com a string “Anônimo”).
+select 
+vp.IdVenda, 
+vs.Descricao,
+c.Id,
+iif(c.Nome is null, 'Anônimo', c.nome) as NomeCliente
+from VendaProduto as vp
+inner join Venda as v
+on v.Id=vp.Id
+inner join VendaStatus as vs
+on vs.Id=v.Id
+inner join Cliente as c
+on c.Id=v.Id
+
+--25)Informe a quantidade de vendas divididas em 2 grupos: aberto e finalizado 
+--(agrupamento)
+select count(IdStatus) as 'Abertas/Fechadas'
+from Venda
+group by IdStatus
+
+--26)Selecione o id, descricao dos produtos que nao foram incluídos em venda alguma.
+select 
+p.Id,
+p.Descricao
+from Produto as p
+inner join VendaProduto as vp
+on vp.Id=p.Id
+inner join Venda as v
+on v.Id=vp.Id
+where not exists 
+(select IdVenda
+from Venda
+where v.Id=p.Id)
+--??
+
+--27)Selecione o nome dos clientes que não compraram.
+select c.Nome 
+from Cliente as c
+inner join Venda as v
+on c.Id=v.Id
+where not exists
+(select *
+from Venda
+where v.Id=c.Id)
+--?
+
+--28)Altere a data da(s) venda(s) do cliente 'aroldo rodrigues' para 01/01/2012.
+update Venda
+set [Dt]='2012-01-01'
+where IdCliente = 4
+
+select * 
+from Cliente as c
+inner join Venda as v
+on v.Id=c.Id
+where c.Nome like '%arold%'
+
+
