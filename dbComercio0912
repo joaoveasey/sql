@@ -1,0 +1,504 @@
+CREATE DATABASE [db_Comercio_0912]
+GO
+USE [db_Comercio_0912]
+GO
+/****** Object:  Table [dbo].[Produto]    Script Date: 09/12/2023 11:56:15 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Produto](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Descricao] [varchar](100) NOT NULL,
+	[QtdeEstoqueAtual] [decimal](5, 2) NOT NULL,
+	[QtdeEstoqueMinimo] [decimal](5, 2) NOT NULL,
+	[VrUnitario] [decimal](7, 2) NOT NULL,
+ CONSTRAINT [PK_Produto] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Cliente]    Script Date: 09/12/2023 11:56:15 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Cliente](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Nome] [varchar](200) NOT NULL,
+	[Sexo] [char](1) NOT NULL,
+	[DtNascimento] [date] NOT NULL,
+	[Email] [varchar](50) NULL,
+ CONSTRAINT [PK_Cliente] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[VendaStatus]    Script Date: 09/12/2023 11:56:15 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[VendaStatus](
+	[Id] [int] NOT NULL,
+	[Descricao] [varchar](50) NOT NULL,
+ CONSTRAINT [PK_VendaStatus] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Venda]    Script Date: 09/12/2023 11:56:15 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Venda](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[IdCliente] [int] NULL,
+	[IdStatus] [int] NOT NULL,
+	[Dt] [date] NOT NULL,
+ CONSTRAINT [PK_Compra] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[VendaProduto]    Script Date: 09/12/2023 11:56:15 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[VendaProduto](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[IdVenda] [int] NOT NULL,
+	[IdProduto] [int] NOT NULL,
+	[Qtde] [int] NOT NULL,
+	[Vr] [decimal](5, 2) NOT NULL,
+ CONSTRAINT [PK_VendaProduto] PRIMARY KEY CLUSTERED 
+(
+	[IdVenda] ASC,
+	[IdProduto] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  View [dbo].[vw_vendadetalhes]    Script Date: 09/12/2023 11:56:15 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE VIEW [dbo].[vw_vendadetalhes]
+AS
+SELECT        VP.IdVenda, V.Dt, V.IdStatus, vs.Descricao, VP.IdProduto, P.Descricao AS PDescricao, VP.Qtde, VP.Vr, P.VrUnitario, V.IdCliente, C.Nome, C.Sexo, C.DtNascimento, C.Email
+FROM            dbo.Venda AS V INNER JOIN
+                         dbo.VendaProduto AS VP ON VP.IdVenda = V.Id INNER JOIN
+                         dbo.Produto AS P ON P.Id = VP.IdProduto LEFT OUTER JOIN
+                         dbo.Cliente AS C ON V.IdCliente = C.Id INNER JOIN
+                         dbo.VendaStatus AS vs ON vs.Id = V.IdStatus
+GO
+SET IDENTITY_INSERT [dbo].[Cliente] ON 
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (1, N'Ana Maria Braga de Almeida', N'F', CAST(N'1976-08-15' AS Date), N'anamaria@gmail.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (2, N'Beatriz Souza', N'F', CAST(N'1966-07-15' AS Date), N'beatriz@gmail.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (3, N'Carlos Nascimento', N'M', CAST(N'1978-09-17' AS Date), N'carlosnascimento@hotmail.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (4, N'João Garcia Neto', N'M', CAST(N'1945-01-23' AS Date), N'joao.neto@gmail.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (5, N'Aroldo Rodrigues', N'M', CAST(N'2000-07-15' AS Date), N'aroldo.rodrigues@hotmail.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (6, N'Beatriz Souza Santos', N'F', CAST(N'1988-10-13' AS Date), N'beatriz.souza@gmail.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (7, N'Géssica Andrade Silva', N'F', CAST(N'1979-07-29' AS Date), N'gessica.silva@hotmail.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (8, N'Gerrie Wheelan', N'F', CAST(N'1984-02-04' AS Date), NULL)
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (9, N'Paolo Oakwell', N'M', CAST(N'1958-11-08' AS Date), N'poakwell8@guardian.co.uk')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (10, N'Peggie Preon', N'F', CAST(N'1952-03-16' AS Date), N'ppreon9@elpais.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (11, N'Dev Cooling', N'F', CAST(N'1989-04-15' AS Date), N'dcoolinga@noaa.gov')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (12, N'Terrill Schwandner', N'M', CAST(N'1985-03-08' AS Date), N'tschwandnerb@yolasite.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (13, N'Gilbertina Larrat', N'F', CAST(N'1997-12-02' AS Date), N'glarratc@intel.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (14, N'Yorgos Chaucer', N'F', CAST(N'1986-03-19' AS Date), N'ychaucerd@goo.gl')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (15, N'Hy Caddell', N'M', CAST(N'1965-08-26' AS Date), N'hcaddelle@google.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (16, N'Melvin Anslow', N'M', CAST(N'1988-04-13' AS Date), N'manslowf@shutterfly.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (17, N'Lorette Elington', N'F', CAST(N'1968-02-20' AS Date), N'lelingtong@topsy.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (18, N'Gabe Mauchline', N'F', CAST(N'1983-12-18' AS Date), NULL)
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (19, N'Nahum Rosin', N'F', CAST(N'1957-02-01' AS Date), NULL)
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (20, N'Mead Reddick', N'F', CAST(N'1994-02-10' AS Date), N'mreddickj@merriam-webster.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (21, N'Nicolle Radke', N'M', CAST(N'1982-02-01' AS Date), N'nradkek@harvard.edu')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (22, N'Rennie McKelvey', N'M', CAST(N'1963-05-16' AS Date), N'rmckelveyl@free.fr')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (23, N'Tristam Revel', N'M', CAST(N'1996-02-10' AS Date), N'trevelm@state.gov')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (24, N'Evelin Boseley', N'M', CAST(N'1954-03-30' AS Date), N'eboseleyn@nps.gov')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (25, N'Jennica Haskell', N'F', CAST(N'1990-12-27' AS Date), N'jhaskello@sogou.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (26, N'Veronika Ginty', N'M', CAST(N'1966-08-03' AS Date), N'vgintyp@epa.gov')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (28, N'Brandea Hauck', N'F', CAST(N'1974-11-08' AS Date), N'bhauckr@issuu.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (29, N'Clemmy Howden', N'F', CAST(N'1967-06-21' AS Date), N'chowdens@arstechnica.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (30, N'Aurelia Sangster', N'M', CAST(N'1994-04-19' AS Date), N'asangstert@blogtalkradio.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (32, N'Manny Peaker', N'M', CAST(N'1980-09-29' AS Date), N'mpeakerv@liveinternet.ru')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (33, N'Meryl Schule', N'F', CAST(N'1952-09-29' AS Date), N'mschulew@amazonaws.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (34, N'Renato Emanuele', N'M', CAST(N'1984-12-16' AS Date), N'remanuelex@amazon.co.jp')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (35, N'Andree Dilger', N'M', CAST(N'1959-06-13' AS Date), N'adilgery@archive.org')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (36, N'Ruy Blackly', N'F', CAST(N'1965-03-25' AS Date), NULL)
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (37, N'Madeleine Heinssen', N'M', CAST(N'1977-06-22' AS Date), N'mheinssen10@barnesandnoble.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (38, N'Edgard Nitto', N'M', CAST(N'1995-10-28' AS Date), N'enitto11@mtv.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (39, N'Clint Margerrison', N'F', CAST(N'1958-08-04' AS Date), N'cmargerrison12@ebay.co.uk')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (40, N'Nicholas Riply', N'M', CAST(N'1955-01-30' AS Date), N'nriply13@ehow.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (41, N'Milo Holstein', N'F', CAST(N'1974-06-17' AS Date), N'mholstein14@army.mil')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (42, N'Jenifer Matous', N'F', CAST(N'1979-12-18' AS Date), N'jmatous15@a8.net')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (43, N'Daisey Bradneck', N'M', CAST(N'1994-01-03' AS Date), N'dbradneck16@wunderground.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (44, N'Paul O''Curneen', N'F', CAST(N'1978-03-04' AS Date), N'pocurneen17@deviantart.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (45, N'Ugo Desouza', N'M', CAST(N'1993-10-12' AS Date), N'udesouza18@pagesperso-orange.fr')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (46, N'Bethena Lambot', N'M', CAST(N'1952-05-09' AS Date), NULL)
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (47, N'Bentley Threadgall', N'M', CAST(N'1992-08-24' AS Date), N'bthreadgall1a@state.gov')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (48, N'Chaddie Harvison', N'F', CAST(N'1958-05-18' AS Date), N'charvison1b@irs.gov')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (49, N'Rafaello Gude', N'F', CAST(N'1980-07-08' AS Date), N'rgude1c@nasa.gov')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (50, N'Simon Lamshead', N'F', CAST(N'1951-05-17' AS Date), N'slamshead1d@nhs.uk')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (51, N'Salvador Vasyanin', N'F', CAST(N'1989-04-08' AS Date), N'svasyanin1e@zdnet.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (52, N'Jeanie Fidge', N'M', CAST(N'1956-09-28' AS Date), N'jfidge1f@google.cn')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (53, N'Hendrik Allingham', N'F', CAST(N'1956-01-20' AS Date), N'hallingham1g@moonfruit.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (54, N'Tore Tarte', N'M', CAST(N'1984-05-26' AS Date), N'ttarte1h@kickstarter.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (55, N'Kiri Erridge', N'M', CAST(N'1968-12-07' AS Date), N'kerridge1i@baidu.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (56, N'Nicolas Supple', N'F', CAST(N'1955-10-26' AS Date), N'nsupple1j@jugem.jp')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (57, N'Brinna Borlease', N'F', CAST(N'1957-10-06' AS Date), N'bborlease1k@nasa.gov')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (58, N'Rosemonde China', N'F', CAST(N'1962-07-19' AS Date), N'rchina1l@auda.org.au')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (59, N'Shandy Tremmel', N'F', CAST(N'1979-06-29' AS Date), N'stremmel1m@amazon.co.uk')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (60, N'Lenette Rouge', N'M', CAST(N'1999-04-30' AS Date), N'lrouge1n@examiner.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (62, N'Max Howley', N'F', CAST(N'1976-08-08' AS Date), N'mhowley1p@nydailynews.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (63, N'Thane Blaver', N'F', CAST(N'1990-09-30' AS Date), N'tblaver1q@themeforest.net')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (64, N'Skippie Koubu', N'F', CAST(N'1999-01-22' AS Date), N'skoubu1r@is.gd')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (65, N'Silvanus Thirsk', N'F', CAST(N'1962-03-27' AS Date), N'sthirsk1s@buzzfeed.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (66, N'Babette Valenti', N'M', CAST(N'1999-09-26' AS Date), N'bvalenti1t@wix.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (67, N'Fransisco McCardle', N'F', CAST(N'1980-02-22' AS Date), NULL)
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (68, N'Vassili Harroway', N'F', CAST(N'1973-03-20' AS Date), N'vharroway1v@yelp.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (69, N'Benedikt Verissimo', N'F', CAST(N'1991-11-12' AS Date), N'bverissimo1w@google.de')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (70, N'Hanna Albrighton', N'F', CAST(N'1953-09-08' AS Date), N'halbrighton1x@cbslocal.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (71, N'Jo-ann Abbatini', N'M', CAST(N'1954-01-03' AS Date), N'jabbatini1y@bloomberg.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (72, N'Rayshell O''Cahsedy', N'M', CAST(N'1953-11-13' AS Date), N'rocahsedy1z@toplist.cz')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (73, N'Fairleigh Elston', N'F', CAST(N'1991-01-12' AS Date), N'felston20@noaa.gov')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (74, N'Clayson Pykerman', N'M', CAST(N'1978-08-08' AS Date), N'cpykerman21@wiley.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (75, N'Hartwell Hugnin', N'F', CAST(N'1977-09-22' AS Date), N'hhugnin22@cam.ac.uk')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (76, N'Suzette Gantlett', N'F', CAST(N'1995-12-03' AS Date), N'sgantlett23@ycombinator.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (77, N'Deidre Dalgarno', N'F', CAST(N'1976-03-19' AS Date), N'ddalgarno24@ucoz.ru')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (78, N'Nathanial Lathbury', N'M', CAST(N'1985-06-13' AS Date), N'nlathbury25@fda.gov')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (79, N'Rene Guillon', N'F', CAST(N'1996-10-09' AS Date), N'rguillon26@whitehouse.gov')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (80, N'Shurwood Aires', N'M', CAST(N'1974-05-03' AS Date), N'saires27@bloglines.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (81, N'Rena Wishkar', N'F', CAST(N'1962-11-10' AS Date), N'rwishkar28@spiegel.de')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (82, N'Lewes Cochet', N'M', CAST(N'1992-05-17' AS Date), N'lcochet29@hc360.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (83, N'Corene Bramah', N'M', CAST(N'1985-11-17' AS Date), N'cbramah2a@utexas.edu')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (84, N'Danita Buffy', N'F', CAST(N'1959-12-26' AS Date), N'dbuffy2b@dailymotion.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (85, N'Ab Mackness', N'M', CAST(N'1966-03-30' AS Date), N'amackness2c@newyorker.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (86, N'Wilton Ellwand', N'M', CAST(N'1961-11-26' AS Date), N'wellwand2d@apple.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (87, N'Reagan Rannigan', N'M', CAST(N'1951-03-17' AS Date), N'rrannigan2e@discuz.net')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (88, N'Randall Colquite', N'M', CAST(N'1962-05-16' AS Date), N'rcolquite2f@netscape.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (89, N'Wendy Doghartie', N'F', CAST(N'1959-07-04' AS Date), N'wdoghartie2g@cafepress.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (90, N'Alec Drinan', N'F', CAST(N'1954-01-17' AS Date), N'adrinan2h@washington.edu')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (91, N'Lauree Seagar', N'F', CAST(N'1952-06-29' AS Date), N'lseagar2i@unc.edu')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (92, N'Milo MacCulloch', N'F', CAST(N'1987-02-12' AS Date), NULL)
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (93, N'Clemens Sinnock', N'F', CAST(N'1965-03-26' AS Date), N'csinnock2k@topsy.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (94, N'Ertha Dumke', N'F', CAST(N'1975-09-20' AS Date), N'edumke2l@sourceforge.net')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (95, N'Elden Dorro', N'M', CAST(N'1978-05-30' AS Date), N'edorro2m@list-manage.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (96, N'Joel Southcott', N'F', CAST(N'1961-05-31' AS Date), NULL)
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (97, N'Erica McTurlough', N'M', CAST(N'1959-10-28' AS Date), N'emcturlough2o@blog.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (98, N'Humphrey Brock', N'M', CAST(N'1964-03-18' AS Date), N'hbrock2p@mac.com')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (99, N'Tiebold Hardingham', N'F', CAST(N'1963-10-23' AS Date), N'thardingham2q@aboutads.info')
+GO
+INSERT [dbo].[Cliente] ([Id], [Nome], [Sexo], [DtNascimento], [Email]) VALUES (100, N'Mabel MacGettigen', N'M', CAST(N'2000-08-04' AS Date), N'mmacgettigen2r@ning.com')
+GO
+SET IDENTITY_INSERT [dbo].[Cliente] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Produto] ON 
+GO
+INSERT [dbo].[Produto] ([Id], [Descricao], [QtdeEstoqueAtual], [QtdeEstoqueMinimo], [VrUnitario]) VALUES (1, N'Lápis', CAST(100.00 AS Decimal(5, 2)), CAST(32.00 AS Decimal(5, 2)), CAST(1.50 AS Decimal(7, 2)))
+GO
+INSERT [dbo].[Produto] ([Id], [Descricao], [QtdeEstoqueAtual], [QtdeEstoqueMinimo], [VrUnitario]) VALUES (2, N'Caneta Azul', CAST(148.00 AS Decimal(5, 2)), CAST(200.00 AS Decimal(5, 2)), CAST(1.75 AS Decimal(7, 2)))
+GO
+INSERT [dbo].[Produto] ([Id], [Descricao], [QtdeEstoqueAtual], [QtdeEstoqueMinimo], [VrUnitario]) VALUES (3, N'Lapiseira 0.5', CAST(32.00 AS Decimal(5, 2)), CAST(40.00 AS Decimal(5, 2)), CAST(9.00 AS Decimal(7, 2)))
+GO
+INSERT [dbo].[Produto] ([Id], [Descricao], [QtdeEstoqueAtual], [QtdeEstoqueMinimo], [VrUnitario]) VALUES (4, N'Lapiseira 0.9', CAST(12.00 AS Decimal(5, 2)), CAST(23.00 AS Decimal(5, 2)), CAST(12.50 AS Decimal(7, 2)))
+GO
+INSERT [dbo].[Produto] ([Id], [Descricao], [QtdeEstoqueAtual], [QtdeEstoqueMinimo], [VrUnitario]) VALUES (5, N'Borracha', CAST(300.00 AS Decimal(5, 2)), CAST(232.00 AS Decimal(5, 2)), CAST(0.70 AS Decimal(7, 2)))
+GO
+INSERT [dbo].[Produto] ([Id], [Descricao], [QtdeEstoqueAtual], [QtdeEstoqueMinimo], [VrUnitario]) VALUES (6, N'Mouse', CAST(23.00 AS Decimal(5, 2)), CAST(5.00 AS Decimal(5, 2)), CAST(20.00 AS Decimal(7, 2)))
+GO
+INSERT [dbo].[Produto] ([Id], [Descricao], [QtdeEstoqueAtual], [QtdeEstoqueMinimo], [VrUnitario]) VALUES (7, N'Mouse Pad', CAST(12.00 AS Decimal(5, 2)), CAST(3.00 AS Decimal(5, 2)), CAST(6.00 AS Decimal(7, 2)))
+GO
+INSERT [dbo].[Produto] ([Id], [Descricao], [QtdeEstoqueAtual], [QtdeEstoqueMinimo], [VrUnitario]) VALUES (8, N'Apontador', CAST(78.00 AS Decimal(5, 2)), CAST(43.00 AS Decimal(5, 2)), CAST(1.50 AS Decimal(7, 2)))
+GO
+INSERT [dbo].[Produto] ([Id], [Descricao], [QtdeEstoqueAtual], [QtdeEstoqueMinimo], [VrUnitario]) VALUES (9, N'Régua 30cm', CAST(200.00 AS Decimal(5, 2)), CAST(40.00 AS Decimal(5, 2)), CAST(1.30 AS Decimal(7, 2)))
+GO
+INSERT [dbo].[Produto] ([Id], [Descricao], [QtdeEstoqueAtual], [QtdeEstoqueMinimo], [VrUnitario]) VALUES (10, N'Caneta Vermelha', CAST(120.00 AS Decimal(5, 2)), CAST(200.00 AS Decimal(5, 2)), CAST(1.75 AS Decimal(7, 2)))
+GO
+INSERT [dbo].[Produto] ([Id], [Descricao], [QtdeEstoqueAtual], [QtdeEstoqueMinimo], [VrUnitario]) VALUES (11, N'Caneta Preta', CAST(100.00 AS Decimal(5, 2)), CAST(200.00 AS Decimal(5, 2)), CAST(1.75 AS Decimal(7, 2)))
+GO
+INSERT [dbo].[Produto] ([Id], [Descricao], [QtdeEstoqueAtual], [QtdeEstoqueMinimo], [VrUnitario]) VALUES (12, N'Caderno 100 folhas', CAST(43.00 AS Decimal(5, 2)), CAST(20.00 AS Decimal(5, 2)), CAST(19.99 AS Decimal(7, 2)))
+GO
+INSERT [dbo].[Produto] ([Id], [Descricao], [QtdeEstoqueAtual], [QtdeEstoqueMinimo], [VrUnitario]) VALUES (13, N'Sulfite A4 Resma', CAST(18.00 AS Decimal(5, 2)), CAST(15.00 AS Decimal(5, 2)), CAST(26.00 AS Decimal(7, 2)))
+GO
+INSERT [dbo].[Produto] ([Id], [Descricao], [QtdeEstoqueAtual], [QtdeEstoqueMinimo], [VrUnitario]) VALUES (14, N'Calculadora', CAST(54.00 AS Decimal(5, 2)), CAST(20.00 AS Decimal(5, 2)), CAST(7.80 AS Decimal(7, 2)))
+GO
+SET IDENTITY_INSERT [dbo].[Produto] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Venda] ON 
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (1, NULL, 1, CAST(N'2023-04-15' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (2, 1, 2, CAST(N'2023-03-13' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (3, 2, 2, CAST(N'2023-03-24' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (4, 3, 2, CAST(N'2023-04-04' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (5, 4, 2, CAST(N'2023-04-25' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (6, 5, 2, CAST(N'2023-04-10' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (7, 6, 1, CAST(N'2022-08-05' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (8, 6, 1, CAST(N'2023-04-04' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (9, 6, 2, CAST(N'2023-04-23' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (10, 5, 1, CAST(N'2023-04-10' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (11, NULL, 2, CAST(N'2023-03-10' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (12, NULL, 1, CAST(N'2021-12-01' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (17, 15, 2, CAST(N'2023-11-01' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (18, 23, 1, CAST(N'2023-08-04' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (19, 34, 2, CAST(N'2023-03-22' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (21, 62, 2, CAST(N'2021-05-07' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (22, 68, 2, CAST(N'2023-10-11' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (23, 83, 1, CAST(N'2021-05-29' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (24, 88, 2, CAST(N'2021-11-27' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (25, 91, 2, CAST(N'2023-05-02' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (26, 22, 2, CAST(N'2021-05-14' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (27, 25, 1, CAST(N'2021-10-24' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (28, 19, 2, CAST(N'2023-06-13' AS Date))
+GO
+INSERT [dbo].[Venda] ([Id], [IdCliente], [IdStatus], [Dt]) VALUES (29, 41, 2, CAST(N'2022-06-03' AS Date))
+GO
+SET IDENTITY_INSERT [dbo].[Venda] OFF
+GO
+SET IDENTITY_INSERT [dbo].[VendaProduto] ON 
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (3, 1, 1, 12, CAST(1.50 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (1, 1, 3, 1, CAST(10.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (2, 1, 4, 2, CAST(12.48 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (4, 2, 3, 1, CAST(9.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (5, 3, 8, 1, CAST(1.50 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (7, 4, 1, 1, CAST(1.50 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (6, 4, 3, 1, CAST(9.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (8, 5, 4, 2, CAST(12.50 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (9, 5, 7, 2, CAST(5.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (10, 6, 5, 3, CAST(1.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (11, 7, 8, 12, CAST(1.50 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (13, 8, 1, 20, CAST(2.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (12, 8, 8, 1, CAST(2.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (14, 9, 1, 1, CAST(1.50 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (15, 10, 2, 1, CAST(1.75 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (17, 11, 6, 1, CAST(20.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (16, 11, 8, 2, CAST(2.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (18, 12, 1, 2, CAST(1.50 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (25, 17, 6, 2, CAST(40.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (20, 17, 13, 1, CAST(26.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (23, 17, 14, 1, CAST(7.80 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (33, 18, 4, 3, CAST(37.50 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (34, 18, 11, 1, CAST(1.75 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (35, 19, 2, 2, CAST(3.50 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (36, 19, 3, 1, CAST(9.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (37, 19, 6, 3, CAST(60.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (38, 19, 8, 1, CAST(1.50 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (41, 21, 2, 3, CAST(5.25 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (42, 21, 10, 3, CAST(5.25 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (43, 22, 12, 2, CAST(39.98 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (40, 23, 14, 1, CAST(7.80 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (44, 24, 10, 2, CAST(3.50 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (45, 24, 12, 2, CAST(39.98 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (46, 25, 1, 2, CAST(3.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (47, 25, 4, 3, CAST(37.50 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (48, 25, 7, 2, CAST(12.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (52, 26, 8, 4, CAST(6.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (51, 26, 9, 3, CAST(3.90 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (49, 26, 11, 1, CAST(1.75 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (50, 26, 13, 2, CAST(52.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (53, 27, 8, 2, CAST(3.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (55, 28, 1, 4, CAST(6.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (54, 28, 10, 2, CAST(3.50 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (56, 28, 11, 2, CAST(3.50 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (57, 29, 6, 2, CAST(40.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (58, 29, 7, 3, CAST(18.00 AS Decimal(5, 2)))
+GO
+INSERT [dbo].[VendaProduto] ([Id], [IdVenda], [IdProduto], [Qtde], [Vr]) VALUES (59, 29, 8, 4, CAST(6.00 AS Decimal(5, 2)))
+GO
+SET IDENTITY_INSERT [dbo].[VendaProduto] OFF
+GO
+INSERT [dbo].[VendaStatus] ([Id], [Descricao]) VALUES (1, N'Em Aberto')
+GO
+INSERT [dbo].[VendaStatus] ([Id], [Descricao]) VALUES (2, N'Finalizada')
+GO
+ALTER TABLE [dbo].[Venda]  WITH CHECK ADD  CONSTRAINT [FK_Venda_Cliente] FOREIGN KEY([IdCliente])
+REFERENCES [dbo].[Cliente] ([Id])
+GO
+ALTER TABLE [dbo].[Venda] CHECK CONSTRAINT [FK_Venda_Cliente]
+GO
+ALTER TABLE [dbo].[Venda]  WITH CHECK ADD  CONSTRAINT [FK_Venda_VendaStatus] FOREIGN KEY([IdStatus])
+REFERENCES [dbo].[VendaStatus] ([Id])
+GO
+ALTER TABLE [dbo].[Venda] CHECK CONSTRAINT [FK_Venda_VendaStatus]
+GO
+ALTER TABLE [dbo].[VendaProduto]  WITH CHECK ADD  CONSTRAINT [FK_VendaProduto_Produto] FOREIGN KEY([IdProduto])
+REFERENCES [dbo].[Produto] ([Id])
+GO
+ALTER TABLE [dbo].[VendaProduto] CHECK CONSTRAINT [FK_VendaProduto_Produto]
+GO
+ALTER TABLE [dbo].[VendaProduto]  WITH CHECK ADD  CONSTRAINT [FK_VendaProduto_Venda] FOREIGN KEY([IdVenda])
+REFERENCES [dbo].[Venda] ([Id])
+GO
+ALTER TABLE [dbo].[VendaProduto] CHECK CONSTRAINT [FK_VendaProduto_Venda]
+GO
